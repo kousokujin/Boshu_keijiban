@@ -2,3 +2,4 @@ db/
 work/node_modules/
 work/package-lock.json
 work/.env
+work/.vscode
