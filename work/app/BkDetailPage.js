@@ -32,7 +32,6 @@ router.get('/recruitment/:id',(req,res,next)=>{
                     }
                     return_request.members.push(temp_mem);
                 });
-                console.log(return_request.member_max);
                 if(return_request.member_max == null){
                     return_request.member_max = 0;
                 }
