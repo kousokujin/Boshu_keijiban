@@ -4,7 +4,7 @@ var router = express.Router();
 var db = require('./db/models/index');
 const { Op } = require("sequelize");
 
-const PAGE_NUM = 5;
+const PAGE_NUM = 10;
 
 router.get('/search',(req,res,next)=>{
     
@@ -16,7 +16,10 @@ router.get('/search',(req,res,next)=>{
     
     if(req.query.SearchWord){
         where = {
-            name: { [Op.like]: '%'+req.query.SearchWord+'%' }
+            [Op.or]: [
+                {name: { [Op.like]: '%'+req.query.SearchWord+'%' }},
+                {owner: { [Op.like]: '%'+req.query.SearchWord+'%' }}
+            ]
         }
     }
     db.Recruitment.findAll({

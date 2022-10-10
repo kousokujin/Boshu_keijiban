@@ -18,7 +18,7 @@
     <tbody>
       <tr v-for="m in main_data.members" v-bind:key="m.id">
         <td v-if="m.isEdit == false">{{m.name}}</td>
-        <td v-else><input text="text" class="form-control form-control-sm" v-model="m.name" v-on:keydown.enter="apply_member_btn(m.id)" ></td>
+        <td v-else><input text="text" :class="['form-control','form-control-sm', invalid_member(m) ? 'is-invalid' : '']" v-model="m.name" v-on:keydown.enter="apply_member_btn(m.id)" ></td>
         <td v-if="m.isEdit == false">{{m.discription}}</td>
         <td v-else><input text="text" class="form-control form-control-sm" v-model="m.discription" v-on:keydown.enter="apply_member_btn(m.id)"></td>
         <td>
@@ -28,7 +28,7 @@
       </tr>
       <tr v-if="main_data.member_max == 0|| main_data.members.length < main_data.member_max">
         <td>
-          <input text="text" v-if="new_member.isEdit == true" v-model="new_member.name" class="form-control form-control-sm" v-on:keydown.enter="add_member_btn">
+          <input text="text" v-if="new_member.isEdit == true" v-model="new_member.name" :class="['form-control','form-control-sm',invalid_member(new_member) ? 'is-invalid' : '']" v-on:keydown.enter="add_member_btn">
         </td>
         <td>
           <input text="text" v-if="new_member.isEdit == true" v-model="new_member.discription" class="form-control form-control-sm" v-on:keydown.enter="add_member_btn">
@@ -57,7 +57,8 @@
           isEdit: false,
           name: "",
           discription: "",
-        }
+        },
+        edit_temp : ""
       };
     },
     created: function(){      
@@ -82,9 +83,16 @@
         this.new_member.isEdit = false;
         const edit_data = this.main_data.members.find(e=>(e.id == id));
         edit_data.isEdit = true;
+        this.edit_temp = edit_data.name;
       },
       apply_member_btn(id){
         const target = this.main_data.members.find(x=>(x.id == id));
+        if(this.invalid_member(target)){
+          target.isEdit = false;
+          target.name = this.edit_temp;
+          this.edit_temp = "";
+          return;
+        }
         const request_data = {
           recuit_id: this.main_data.id,
           id: target.id,
@@ -98,10 +106,16 @@
         }).catch((err)=>{
           utils.ErrorMessage(err,this);
         });
+        this.edit_temp = "";
 
       },
       add_member_btn(){
         if(this.new_member.isEdit == true){
+          if(this.invalid_member(this.new_member)){
+            this.cancel_member_btn();
+            return;
+          }
+
           let request_data = {
             recuit_id: this.main_data.id,
             name: this.new_member.name,
@@ -130,6 +144,9 @@
         this.new_member.name = "";
         this.new_member.discription = "";
         this.new_member.isEdit = false;
+      },
+      invalid_member(member){
+        return member.name.length <= 0 || member.name.length > 20
       }
     },
     computed:{
