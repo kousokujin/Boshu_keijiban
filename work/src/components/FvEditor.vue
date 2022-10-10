@@ -65,12 +65,6 @@ import { required, numeric} from '@vuelidate/validators'
           utils.ErrorMessage(err,this);
         });
       },
-      ValidateTest(){
-        console.log(this.v$);
-        console.log(this.v$.name.$errors);
-        console.log(this.v$.member_count.$errors);
-        console.log(this.v$.$invalid);
-      }
     },
     created(){
       if(this.$route.params.id == "new"){
