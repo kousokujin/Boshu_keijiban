@@ -9,7 +9,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                  <router-link class="nav-link" aria-current="page" to="/edit">新規作成</router-link>
+                  <router-link class="nav-link" aria-current="page" to="/edit/new">新規作成</router-link>
                 </li>
                 <li class="nav-item">
                   <router-link class="nav-link" aria-current="page" to="/">一覧</router-link>

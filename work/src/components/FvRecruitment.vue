@@ -1,13 +1,13 @@
 <template>
-    <h1 class="col-auto me-auto display-2">
-      {{main_data.name}}
-      <small class="text-muted">(@{{main_data.owner}})</small>
-    </h1>
-    <span>更新日:{{ConvertTime(main_data.updatedAt)}}</span>
-    <p class="lead" style="white-space:pre-wrap; word-wrap:break-word;">{{main_data.discription}}</p>
-    <h4 class="display-6" v-if="main_data.member_max != 0">メンバー({{main_data.members.length}}/{{main_data.member_max}})</h4>
-    <h4 class="display-6" v-else>メンバー({{main_data.members.length}}人)</h4>
-    <table class="table table-striped mb-3">
+  <h1 class="col-auto me-auto display-2">
+    {{main_data.name}}
+    <small class="text-muted">(@{{main_data.owner}})</small>
+  </h1>
+  <span>更新日:{{ConvertTime(main_data.updatedAt)}}</span>
+  <p class="lead" style="white-space:pre-wrap; word-wrap:break-word;">{{main_data.discription}}</p>
+  <h4 class="display-6" v-if="main_data.member_max != 0">メンバー({{main_data.members.length}}/{{main_data.member_max}})</h4>
+  <h4 class="display-6" v-else>メンバー({{main_data.members.length}}人)</h4>
+  <table class="table table-striped mb-3">
     <thead>
       <tr>
         <th class="col-3">名前</th>
@@ -42,7 +42,8 @@
         </td>
       </tr>
     </tbody>
-</table>
+  </table>
+  <router-link :to="{ path: `/edit/${main_data.id}`}" type="button" class="btn btn-primary">編集</router-link>
 </template>
 <script>
   import utils from "./scripts/utils.js";

@@ -1,18 +1,18 @@
 <template>
-    <div class="input-group mb-3">
-      <input type="text" class="form-control" placeholder="検索" aria-label="検索" aria-describedby="SearchBtn" v-model="SearchWord" v-on:keydown.enter="RunSearch">
-      <button class="btn btn-primary" type="button" id="SearchBtn" v-on:click="RunSearch"><i class="bi bi-search"></i></button>
+  <div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="検索" aria-label="検索" aria-describedby="SearchBtn" v-model="SearchWord" v-on:keydown.enter="RunSearch">
+    <button class="btn btn-primary" type="button" id="SearchBtn" v-on:click="RunSearch"><i class="bi bi-search"></i></button>
+  </div>
+  <div class="card mb-3" v-for="item in RecList" v-bind:key="item.id">
+    <div class="card-body">
+      <h3 class="card-title">
+        <router-link :to="{name:'Recruitment',params: {id:item.id}}">{{item.name}}</router-link>
+      </h3>
+      <div class="card-subtitle mb-2 text-muted">@{{item.owner}}</div>
+      <p>{{ReadMore(item.discription)}}</p>
+      <span>更新日: {{ConvertTime(item.updatedAt, 20)}}</span>
     </div>
-    <div class="card mb-3" v-for="item in RecList" v-bind:key="item.id">
-      <div class="card-body">
-        <h3 class="card-title">
-          <router-link :to="{name:'Recruitment',params: {id:item.id}}">{{item.name}}</router-link>
-        </h3>
-        <div class="card-subtitle mb-2 text-muted">@{{item.owner}}</div>
-        <p>{{ReadMore(item.discription)}}</p>
-        <span>更新日: {{ConvertTime(item.updatedAt, 20)}}</span>
-      </div>
-    </div>
+  </div>
 </template>
 
 <script>

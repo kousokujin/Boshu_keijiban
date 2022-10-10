@@ -10,8 +10,8 @@ const routes = [
     component: FvList
   },
   {
-    path: '/edit',
-    name: 'editor',
+    path: '/edit/:id',
+    name: 'edit',
     component: FvEditor
   },
   {
