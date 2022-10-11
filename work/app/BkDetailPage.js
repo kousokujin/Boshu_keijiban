@@ -114,4 +114,17 @@ router.post('/modify_member',(req,res,next)=>{
     })
 });
 
+router.post('/delete/recruitment',(req,res,next)=>{
+    const id = req.body.id;
+    db.Recruitment.findOne({where:{id: id}}).then(async function(result){
+        if(result == null){
+            res.status(404).json({message: "This id is not exist."});
+        }
+        else{
+            await db.Member.destroy({where: {recuit_id: id}}).catch(err=>utils.ReturnError(res,err));
+            await result.destroy().catch(err=>utils.ReturnError(res,err));
+            res.json({message: "OK"});
+        }
+    })
+});
 module.exports = router;
