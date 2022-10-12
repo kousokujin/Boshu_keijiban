@@ -25,7 +25,7 @@ router.get('/search',(req,res,next)=>{
     db.Recruitment.findAll({
         where: where,
         order: [
-            ['updatedAt','DESC'],
+            ['createdAt','DESC'],
         ],
         limit: PAGE_NUM,
         offset: PAGE_NUM * page

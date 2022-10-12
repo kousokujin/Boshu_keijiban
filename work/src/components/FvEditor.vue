@@ -26,7 +26,7 @@
   </div>
   <div class="d-grid gap-2 d-md-flex">
     <button v-if="id=='new'" type="button" class="btn btn-primary" v-on:click="DataSubmit" :disabled="v$.$invalid">作成</button>
-    <button v-else type="button" class="btn btn-primary" v-on:click="DataSubmit">変更</button>
+    <button v-else type="button" class="btn btn-primary" v-on:click="DataSubmit" :disabled="v$.$invalid">変更</button>
     <router-link v-if="id!='new'" :to="{name:'Recruitment',params: {id:id}}" type="button" class="btn btn-secondary">キャンセル</router-link>
   </div>
 </template>

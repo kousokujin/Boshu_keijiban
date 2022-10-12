@@ -28,7 +28,7 @@
             </div>
             <div v-else class="d-grid gap-2 d-md-flex">
               <button type="btn" class="btn btn-sm btn-success" v-on:click="apply_member_btn(m.id)"><i class="bi bi-check-lg"></i></button>
-              <button type="btn" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+              <button type="btn" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#delete_member_modal"><i class="bi bi-trash"></i></button>
             </div>
           </td>
         </tr>
@@ -78,6 +78,25 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-bs-dismiss="modal" v-on:click="delete_recruitment">削除する</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!--メンバー削除モーダル-->
+  <div class="modal fade" id="delete_member_modal" tabindex="-1" aria-labelledby="delete_member_modal_label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="delete_member_modal_label">削除</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          メンバーを削除しますか？
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" v-on:click="delete_member">削除する</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
         </div>
       </div>
@@ -194,6 +213,23 @@
         }
         this.axios.post('/api/delete/recruitment',request_data).then(()=>{
           this.$router.push('/');
+        }).catch((err)=>{
+          utils.ErrorMessage(err,this);
+        })
+      },
+      delete_member(){
+        const target = this.main_data.members.find((x)=>(x.isEdit == true));
+        if(target == null){
+          return;
+        }
+        const request_data = {
+          member_id: target.id,
+          recuit_id : this.main_data.id,
+          _csrf: this.main_data._csrf
+        }
+
+        this.axios.post('/api/delete/member',request_data).then(()=>{
+          this.reload();
         }).catch((err)=>{
           utils.ErrorMessage(err,this);
         })

@@ -5,7 +5,7 @@ var db = require('./db/models/index')
 
 router.get('/recruitment/:id',(req,res,next)=>{
     const id = req.params['id'];
-    db.Recruitment.findOne({where:{id: id}}).then((result)=>{
+    db.Recruitment.findOne({where:{id: id}, order: [['createdAt', "ASC"]]}).then((result)=>{
         if(result == null){
             res.status(404).json({message: "This id is not exist."});
         }
@@ -39,7 +39,7 @@ router.get('/recruitment/:id',(req,res,next)=>{
             });
         }
     }).catch((e)=>{
-        utils.ReturnError(res,err);
+        utils.ReturnError(res,e);
     });
 });
 
@@ -67,7 +67,7 @@ router.post('/add_member',async function(req,res,next){
         utils.ReturnError(res,err);
     });
 
-    const CurrentMemberCount = MemberCountProcess[0].dataValues.recuit_id_count;
+    const CurrentMemberCount = MemberCountProcess[0] == null ? 0 : MemberCountProcess[0].dataValues.recuit_id_count;
     const MaxMemberCount = MemberCountProcess[1].dataValues.member_cnt;
     if((MaxMemberCount != 0 || MaxMemberCount != null) && CurrentMemberCount >= MaxMemberCount){
         res.status(400).json({
@@ -76,15 +76,11 @@ router.post('/add_member',async function(req,res,next){
         });
     }
     else{
-        let discription = "";
-        if(discription in req.body){
-            discription = req.body.discription;
-        }
         db.Member.create({
             recuit_id: req.body.recuit_id,
             name: req.body.name,
-            discription: discription
-        }).then((result)=>{
+            discription: req.body.discription
+        }).then(()=>{
             res.json({message: "OK"});
         }).catch((err)=>{
             utils.ReturnError(res,err);
@@ -126,5 +122,22 @@ router.post('/delete/recruitment',(req,res,next)=>{
             res.json({message: "OK"});
         }
     })
+});
+
+router.post('/delete/member',(req,res,next)=>{
+    const member_id = req.body.member_id;
+    const recuit_id = req.body.recuit_id;
+
+    db.Member.findOne({where: {id: member_id, recuit_id: recuit_id}}).then(async function(result){
+        if(result == null){
+            res.status(404).json({message: "This member is not exist."});
+        }
+        else{
+            await db.Member.destroy({where: {id: member_id, recuit_id: recuit_id}});
+            res.json({message: "OK"});
+        }
+    }).catch((e)=>{
+        utils.ReturnError(res,e);
+    });
 });
 module.exports = router;
