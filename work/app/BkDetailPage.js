@@ -2,6 +2,7 @@ var utils = require('./utils');
 var express = require('express');
 var router = express.Router();
 var db = require('./db/models/index')
+const { check, validationResult } = require('express-validator/check');
 
 router.get('/recruitment/:id',(req,res,next)=>{
     const id = req.params['id'];
@@ -43,16 +44,19 @@ router.get('/recruitment/:id',(req,res,next)=>{
     });
 });
 
-router.post('/add_member',async function(req,res,next){
-    //validationでいいかも
-    if(!req.body.recuit_id || !req.body.name){
-        res.status(400).json({message : "id and name are empty."})
-    }
-    if(req.body.name == ""){
-        res.status(400).json({message : "name is empty."})
+const AddMemberValidators = [
+    check('recuit_id').not().isEmpty(),
+    check('name').not().isEmpty().isLength({min:1,max:20}),
+];
+router.post('/add_member',AddMemberValidators,async function(req,res,next){
+
+    const ValidateErrors= validationResult(req);
+    if(!ValidateErrors.isEmpty()){
+        utils.ValdiateError(res,ValidateErrors);
     }
 
-    // todo: idが存在しないときを書く(validation)
+    const remote_ip = utils.getRemoteIP(req);
+
     let MemberCountProcess = await Promise.all([
         db.Member.findOne({
             where: {recuit_id: req.body.recuit_id},
@@ -69,7 +73,8 @@ router.post('/add_member',async function(req,res,next){
 
     const CurrentMemberCount = MemberCountProcess[0] == null ? 0 : MemberCountProcess[0].dataValues.recuit_id_count;
     const MaxMemberCount = MemberCountProcess[1].dataValues.member_cnt;
-    if((MaxMemberCount != 0 || MaxMemberCount != null) && CurrentMemberCount >= MaxMemberCount){
+    console.log("member_cnt:"+MaxMemberCount);
+    if(MaxMemberCount != 0 && CurrentMemberCount >= MaxMemberCount){
         res.status(400).json({
             status: "NG",
             message: "MAX_MEMBER"
@@ -79,8 +84,15 @@ router.post('/add_member',async function(req,res,next){
         db.Member.create({
             recuit_id: req.body.recuit_id,
             name: req.body.name,
-            discription: req.body.discription
-        }).then(()=>{
+            discription: req.body.discription,
+            IPaddr: remote_ip
+        }).then((x)=>{
+            const history_data = {
+                recuit_id: req.body.recuit_id,
+                name: req.body.name,
+                discription: req.body.discription,
+            }
+            utils.history.create(utils.db_name.member,x["id"],history_data,utils.getRemoteIP(req));
             res.json({message: "OK"});
         }).catch((err)=>{
             utils.ReturnError(res,err);
@@ -88,14 +100,23 @@ router.post('/add_member',async function(req,res,next){
     }
 });
 
-router.post('/modify_member',(req,res,next)=>{
-    //validation
-    //値がないときなど
+const ModifyMemberValidation = [
+    check('recuit_id').not().isEmpty(),
+    check('id').not().isEmpty(),
+    check('name').not().isEmpty().isLength({min:1,max:20})
+];
+router.post('/modify_member',ModifyMemberValidation ,(req,res,next)=>{
+    const ValidateErrors= validationResult(req);
+    if(!ValidateErrors.isEmpty()){
+        utils.ValdiateError(res,ValidateErrors);
+    }
 
+    const remote_ip = utils.getRemoteIP(req);
     db.Member.update(
         {
             name: req.body.name,
-            discription: req.body.discription
+            discription: req.body.discription,
+            IPaddr: remote_ip
         },
         {
             where: {
@@ -103,38 +124,79 @@ router.post('/modify_member',(req,res,next)=>{
                 recuit_id: req.body.recuit_id
             }
         }
-    ).then((result)=>{
+    ).then(()=>{
+        utils.history.modify(
+            utils.db_name.member,
+            req.body.id,
+            {
+                name: req.body.name,
+                discription: req.body.discription,
+            },
+            remote_ip
+        );
         res.json({message: "OK"});
-    }).catch(e=>{
+    }).catch(err=>{
         utils.ReturnError(res,err);
     })
 });
 
-router.post('/delete/recruitment',(req,res,next)=>{
+const DeleteRecruitmentValidation = [
+    check('id').not().isEmpty()
+]
+router.post('/delete/recruitment',DeleteRecruitmentValidation,(req,res,next)=>{
+    const ValidateErrors= validationResult(req);
+    if(!ValidateErrors.isEmpty()){
+        utils.ValdiateError(res,ValidateErrors);
+    }
+
     const id = req.body.id;
+    const remote_ip = utils.getRemoteIP(req);
     db.Recruitment.findOne({where:{id: id}}).then(async function(result){
         if(result == null){
             res.status(404).json({message: "This id is not exist."});
         }
         else{
-            await db.Member.destroy({where: {recuit_id: id}}).catch(err=>utils.ReturnError(res,err));
-            await result.destroy().catch(err=>utils.ReturnError(res,err));
-            res.json({message: "OK"});
+            Promise.all([
+                async function(){
+                    await db.Member.destroy({where: {recuit_id: id}}).catch(err=>utils.ReturnError(res,err));
+                    await result.destroy().catch(err=>utils.ReturnError(res,err));
+                },
+                utils.history.delete(utils.db_name.recruitment,id,remote_ip)
+            ]).then(()=>{
+                res.json({message: "OK"});
+            }).catch((err)=>{
+                utils.ReturnError(res,err);
+            })
         }
     })
 });
 
-router.post('/delete/member',(req,res,next)=>{
+const DeleteMemberValidation = [
+    check('member_id').not().isEmpty(),
+    check('recuit_id').not().isEmpty()
+]
+router.post('/delete/member',DeleteMemberValidation,(req,res,next)=>{
+    const ValidateErrors= validationResult(req);
+    if(!ValidateErrors.isEmpty()){
+        utils.ValdiateError(res,ValidateErrors);
+    }
     const member_id = req.body.member_id;
     const recuit_id = req.body.recuit_id;
+    const remote_ip = utils.getRemoteIP(req);
 
     db.Member.findOne({where: {id: member_id, recuit_id: recuit_id}}).then(async function(result){
         if(result == null){
             res.status(404).json({message: "This member is not exist."});
         }
         else{
-            await db.Member.destroy({where: {id: member_id, recuit_id: recuit_id}});
-            res.json({message: "OK"});
+            Promise.all([
+                db.Member.destroy({where: {id: member_id, recuit_id: recuit_id}}),
+                utils.history.delete(utils.db_name.member,member_id,remote_ip)
+            ]).then(()=>{
+                res.json({message: "OK"});
+            }).catch((err)=>{
+                utils.ReturnError(res,err);
+            });
         }
     }).catch((e)=>{
         utils.ReturnError(res,e);

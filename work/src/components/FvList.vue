@@ -32,6 +32,9 @@ import utils from "./scripts/utils.js";
       this.InitScroll();
       window.addEventListener("scroll", this.Scroll);
     },
+    mounted(){
+      document.title = "UENO"
+    },
     methods:{
       GetSearch(){
         return this.axios.get('/api/search',{

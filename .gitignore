@@ -1,4 +1,6 @@
-db/
+db/data/
+db/my.cnf/
+db/sql/
 work/node_modules/
 work/package-lock.json
 work/.env

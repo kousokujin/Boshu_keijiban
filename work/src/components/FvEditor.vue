@@ -66,6 +66,14 @@ import { required, numeric, maxLength,integer} from '@vuelidate/validators'
       },
       ValidateMessage(validate_obj){
         return utils.ValidateMessage(validate_obj.$errors);
+      },
+      settitle(){
+        if(this.id == 'new'){
+          document.title = "UENO - 新規作成";
+        }
+        else{
+          document.title = "UENO -"+ this.name + "の編集";
+        }
       }
     },
     created(){
@@ -86,10 +94,15 @@ import { required, numeric, maxLength,integer} from '@vuelidate/validators'
           this.discription = res.data.discription;
           this.owner_join = false;
           this.csrf_token = res.data._csrf;
+
+          this.settitle();
         }).catch((err)=>{
           utils.ErrorMessage(err,this);
         })
       }
+    },
+    mounted() {
+      this.settitle();
     },
     setup () {
       return { v$: useVuelidate() }

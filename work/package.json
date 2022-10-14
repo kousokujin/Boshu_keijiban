@@ -1,5 +1,5 @@
 {
-  "name": "boshu_keijiban",
+  "name": "UENO",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -21,6 +21,7 @@
     "csurf": "^1.11.0",
     "express": "^4.18.1",
     "express-session": "^1.17.3",
+    "express-validator": "^6.14.2",
     "mysql2": "^2.3.3",
     "npm-run-all": "^4.1.5",
     "sequelize": "^6.23.2",

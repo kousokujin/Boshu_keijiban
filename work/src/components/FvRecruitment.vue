@@ -122,6 +122,9 @@
     created: function(){      
       this.reload();
     },
+    mounted() {
+      document.title = "UENO"
+    },
     emits: ['InfoMessage','ErrorMessage'],
     methods:{
       reload(){
@@ -130,6 +133,7 @@
           this.main_data.members.forEach((value)=>{
             value["isEdit"] = false;
           });
+          document.title = "UENO - " + this.main_data.name;
         }).catch((err)=>{
           utils.ErrorMessage(err,this);
         });

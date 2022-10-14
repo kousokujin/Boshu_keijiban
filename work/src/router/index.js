@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import FvList from '@/components/FvList.vue'
 import FvEditor from '@/components/FvEditor.vue'
 import FvRecruitment from '@/components/FvRecruitment.vue'
+import FvError from '@/components/ErrorPage.vue'
+import FvNotFound from '@/components/NotFountPage.vue'
 
 const routes = [
   {
@@ -18,6 +20,16 @@ const routes = [
     path: '/Recruitment/:id',
     name: 'Recruitment',
     component: FvRecruitment
+  },
+  {
+    path: '/error',
+    name: 'ServerError',
+    component: FvError,
+  },
+  {
+    path: "/:catchAll(.*)",
+    name: 'NotFound',
+    component: FvNotFound
   }
 ]
 

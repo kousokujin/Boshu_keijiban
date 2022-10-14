@@ -8,9 +8,15 @@ import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 //import 'bootstrap/js/dist/modal'
+
 const app = createApp(App);
 app.use(VueAxios,axios);
 app.use(router);
+
+app.config.errorHandler = (err, vm, info) => {
+    console.error(`errorHandler: ${info}`, err);
+    router.replace({ name: 'ServerError',info: info });
+}
 //app.use(VuelidatePlugin)
 //app.use(BootstrapVue);
 //app.use(IconsPlugin);
