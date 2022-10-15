@@ -46,7 +46,10 @@ router.post(
                 const history_member = {
                     recuit_id: db_result['id'],
                     name: req.body.owner,
-                    discription: ""
+                    discription: "",
+                    reference: {
+                        recuit_id: db_result['id']
+                    }
                 }
                 utils.history.create(utils.db_name.member,member_result["id"],history_member,remote_ip);
             }

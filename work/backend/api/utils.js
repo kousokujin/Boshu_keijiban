@@ -21,7 +21,8 @@ const utils = {
         return response.status(422).json(ValidateError);
     },
     getRemoteIP(req){
-        return  req.connection.remoteAddress || req.headers["x-forwarded-for"];
+        //console.log(req.headers["x-forwarded-for"]);
+        return req.headers["x-forwarded-for"] || req.connection.remoteAddress;
     },
     history: {
         modify(table_name,column_id,content,ipaddr = ""){
@@ -30,8 +31,8 @@ const utils = {
         create(table_name,column_id,content,ipaddr = ""){
             return hisory_db(table_name,column_id,"CREATE",content,ipaddr);
         },
-        delete(table_name,column_id,ipaddr = ""){
-            return hisory_db(table_name,column_id,"DELETE",{},ipaddr);
+        delete(table_name,column_id,content,ipaddr = ""){
+            return hisory_db(table_name,column_id,"DELETE",content,ipaddr);
         },
     },
     db_name: {

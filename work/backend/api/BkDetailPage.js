@@ -6,7 +6,7 @@ const { check, validationResult } = require('express-validator/check');
 
 router.get('/recruitment/:id',(req,res,next)=>{
     const id = req.params['id'];
-    db.Recruitment.findOne({where:{id: id}, order: [['createdAt', "ASC"]]}).then((result)=>{
+    db.Recruitment.findOne({where:{id: id}}).then((result)=>{
         if(result == null){
             res.status(404).json({message: "This id is not exist."});
         }
@@ -22,7 +22,7 @@ router.get('/recruitment/:id',(req,res,next)=>{
                 members: [],
                 _csrf: req.csrfToken()
             };
-            db.Member.findAll({where: {recuit_id: id}}).then((m)=>{
+            db.Member.findAll({where: {recuit_id: id}, order: [['createdAt', "ASC"]]}).then((m)=>{
                 m.forEach((value,index,array)=>{
                     let temp_mem = {
                         id: value.dataValues.id,
@@ -91,6 +91,9 @@ router.post('/add_member',AddMemberValidators,async function(req,res,next){
                 recuit_id: req.body.recuit_id,
                 name: req.body.name,
                 discription: req.body.discription,
+                reference: {
+                    recuit_id: req.body.recuit_id,
+                }
             }
             utils.history.create(utils.db_name.member,x["id"],history_data,utils.getRemoteIP(req));
             res.json({message: "OK"});
@@ -131,6 +134,9 @@ router.post('/modify_member',ModifyMemberValidation ,(req,res,next)=>{
             {
                 name: req.body.name,
                 discription: req.body.discription,
+                reference: {
+                    recuit_id: req.body.recuit_id,
+                }
             },
             remote_ip
         );
@@ -157,11 +163,10 @@ router.post('/delete/recruitment',DeleteRecruitmentValidation,(req,res,next)=>{
         }
         else{
             Promise.all([
-                async function(){
-                    await db.Member.destroy({where: {recuit_id: id}}).catch(err=>utils.ReturnError(res,err));
-                    await result.destroy().catch(err=>utils.ReturnError(res,err));
-                },
-                utils.history.delete(utils.db_name.recruitment,id,remote_ip)
+                db.Member.destroy({where: {recuit_id: id}}).then(()=>{
+                    db.Recruitment.destroy({where: {id: id}});
+                }),
+                utils.history.delete(utils.db_name.recruitment,id,{},remote_ip)
             ]).then(()=>{
                 res.json({message: "OK"});
             }).catch((err)=>{
@@ -189,9 +194,12 @@ router.post('/delete/member',DeleteMemberValidation,(req,res,next)=>{
             res.status(404).json({message: "This member is not exist."});
         }
         else{
+            const history_data = {
+                recuit_id: recuit_id
+            }
             Promise.all([
                 db.Member.destroy({where: {id: member_id, recuit_id: recuit_id}}),
-                utils.history.delete(utils.db_name.member,member_id,remote_ip)
+                utils.history.delete(utils.db_name.member,member_id,history_data,remote_ip)
             ]).then(()=>{
                 res.json({message: "OK"});
             }).catch((err)=>{

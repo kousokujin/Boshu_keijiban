@@ -29,11 +29,12 @@ import utils from "./scripts/utils.js";
     emits: ['InfoMessage','ErrorMessage'],
     created(){
       //this.RunSearch();
-      this.InitScroll();
+      //this.InitScroll();
       window.addEventListener("scroll", this.Scroll);
     },
     mounted(){
       document.title = "UENO"
+      this.RunSearch();
     },
     methods:{
       GetSearch(){

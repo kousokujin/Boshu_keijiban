@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve:frontend": "vue-cli-service serve",
-    "serve:backend": "node ./server.js",
-    "serve": "run-p serve:*",
+    "backend": "vue-cli-service serve",
+    "serve": "node ./server.js",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
@@ -19,6 +18,7 @@
     "bootstrap-vue": "^2.22.0",
     "core-js": "^3.8.3",
     "csurf": "^1.11.0",
+    "ejs": "^3.1.8",
     "express": "^4.18.1",
     "express-session": "^1.17.3",
     "express-validator": "^6.14.2",
