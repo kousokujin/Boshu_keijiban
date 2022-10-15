@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 var csrf = require('csurf');
 const session = require('express-session');
+const config = require('./config/config.js');
 
 var app_router = require('./backend/router.js');
 var frame = require('./backend/frame.js');
@@ -25,4 +26,4 @@ app.use(csrf({cookie: false}));
 app_router(app);
 app.use('/',frame);
 
-app.listen(3000, () => console.log('Start Backend Server on port 3000!'));
+app.listen(config.app_port, () => console.log('Start Backend Server on port '+config.app_port));
