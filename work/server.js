@@ -20,6 +20,7 @@ app.use('/img', express.static(__dirname + '/dist/img/'));
 app.use('/css', express.static(__dirname + '/dist/css/'));
 app.use('/js', express.static(__dirname + '/dist/js/'));
 app.use('/fonts', express.static(__dirname + '/dist/fonts/'));
+app.use('/pub_img',express.static(__dirname + '/public/img'))
 
 app.use(csrf({cookie: false}));
 

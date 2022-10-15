@@ -17,7 +17,7 @@ router.get('/Recruitment/:id',async function(req,res){
         title: title,
         discription: discription,
         url: GetFullURL(req),
-        image: OgpIconURL(req),
+        host: GetHostURL(req),
     };
     res.render("./layout.ejs",data);
 });
@@ -25,7 +25,7 @@ router.get('/Recruitment/:id',async function(req,res){
 router.get(/.*/,(req, res)=>{
     data = {
         url: GetFullURL(req),
-        image: OgpIconURL(req),
+        host: GetHostURL(req),
     }
 
     res.render("./layout.ejs",data);
@@ -39,7 +39,4 @@ function GetFullURL(req){
     return  GetHostURL(req) + req.originalUrl;
 }
 
-function OgpIconURL(req){
-    return GetHostURL(req) + '/img/ogp_icon.png';
-}
 module.exports = router;

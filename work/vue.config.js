@@ -17,5 +17,10 @@ module.exports = defineConfig({
     resolve: {
       extensions: ['.vue', '.js', '.json']
     }
+  },
+  pwa: {
+    iconPaths: {
+      favicon32: 'favicon.png',
+    }
   }
 })
