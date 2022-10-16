@@ -6,7 +6,8 @@
     "backend": "vue-cli-service serve",
     "serve": "node ./server.js",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "production": "NODE_ENV=production node ./server.js"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.6",

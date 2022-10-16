@@ -21,11 +21,14 @@ router.post(
     }
     const id = req.params['id'];
     const remote_ip = utils.getRemoteIP(req);
+    const member_cnt = req.body.member_count == false ? 0 : req.body.member_count
+
+    console.log("membercnt:"+(req.body.member_count == false));
     if(id == "new"){
         db.Recruitment.create({
             name: req.body.name,
             owner: req.body.owner,
-            member_cnt: req.body.member_count,
+            member_cnt: member_cnt,
             discription: req.body.discription,
             IPaddr: remote_ip
         }).then(async function(db_result){
@@ -66,7 +69,7 @@ router.post(
         db.Recruitment.update({
             name: req.body.name,
             owner: req.body.owner,
-            member_cnt: req.body.member_count,
+            member_cnt: member_cnt,
             discription: req.body.discription,
             IPaddr: remote_ip
 
